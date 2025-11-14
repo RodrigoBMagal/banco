@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "transactions")
-public class Transaction extends Account{
+public class Transfer extends Account{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,7 +15,7 @@ public class Transaction extends Account{
 
     @Enumerated(EnumType.STRING)
     @Column(nullable=false)
-    private TransactionType type;
+    private TransferType type;
 
     @Column(nullable=false)
     private BigDecimal amount;
@@ -29,7 +29,7 @@ public class Transaction extends Account{
 
     private Long accountDestinationId;
 
-    public Transaction(Account account, BigDecimal amount, TransactionType type) {
+    public Transfer(Account account, BigDecimal amount, TransferType type) {
         this.account = account;
         this.amount = amount;
         this.type = type;
@@ -39,11 +39,11 @@ public class Transaction extends Account{
         return id;
     }
 
-    public TransactionType getType() {
+    public TransferType getType() {
         return type;
     }
 
-    public void setType(TransactionType type) {
+    public void setType(TransferType type) {
         this.type = type;
     }
 

@@ -29,7 +29,7 @@ public class Account extends Client{
     private Client client;
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
-    private List<Transaction> transactions;
+    private List<Transfer> transactions;
 
 
 }

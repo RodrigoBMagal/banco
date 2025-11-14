@@ -1,6 +1,6 @@
 package com.example.banco.entities;
 
-public enum TransactionType {
+public enum TransferType {
     DEPOSIT("Deposit"),
     WITHDRAWAL("Withdrawl"),
     SENT_TRANSFER("Sent Transfer"),
@@ -8,7 +8,7 @@ public enum TransactionType {
 
     private final String description;
 
-    TransactionType(String description) {
+    TransferType(String description) {
         this.description = description;
     }
     
