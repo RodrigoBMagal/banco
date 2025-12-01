@@ -2,7 +2,7 @@ package com.example.banco.entities;
 
 public enum TransferType {
     DEPOSIT("Deposit"),
-    WITHDRAWAL("Withdrawl"),
+    WITHDRAW("Withdraw"),
     SENT_TRANSFER("Sent Transfer"),
     RECEIVED_TRANSFER("Received Transfer");
 

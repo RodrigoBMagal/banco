@@ -29,7 +29,7 @@ public class Transfer extends Account{
 
     private Long accountDestinationId;
 
-    public Transfer(Account account, BigDecimal amount, TransferType type) {
+    public Transfer(TransferType type, BigDecimal amount, Account account) {
         this.account = account;
         this.amount = amount;
         this.type = type;
