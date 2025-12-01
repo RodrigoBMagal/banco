@@ -41,8 +41,8 @@ public class AccountService {
             
         return new BalanceResponseDTO(
             account.getId(),
+            account.getAccountNumber(),
             account.getBalance()
-            account.getAccountNumber()
         );
     }
 
