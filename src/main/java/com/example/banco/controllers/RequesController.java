@@ -1,5 +1,5 @@
 package com.example.banco.controllers;
 
-public class ClientDTO {
-    
+public @interface RequesController {
+
 }
