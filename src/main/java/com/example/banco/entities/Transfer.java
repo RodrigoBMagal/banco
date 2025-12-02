@@ -15,8 +15,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "transactions")
-public class Transfer extends Account{
+@Table(name = "transfers")
+public class Transfer{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
