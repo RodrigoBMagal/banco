@@ -3,7 +3,16 @@ package com.example.banco.entities;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "transactions")
@@ -61,5 +70,9 @@ public class Transfer extends Account{
 
     public Long getAccountDestinationId() {
         return accountDestinationId;
+    }
+
+    public Long getDestinationAccountId() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

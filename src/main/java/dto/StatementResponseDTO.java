@@ -60,17 +60,17 @@ public class StatementResponseDTO {
         private TransferType type;
         private BigDecimal amount;
         private LocalDateTime timestamp;
-        private Long relatedAccountId;
+        private Long destinationAccountId;
 
         public TransferRequestDTO() {
         }
 
-        public TransferRequestDTO(Long id, TransferType type, BigDecimal amount, LocalDateTime timestamp, Long relatedAccountId) {
+        public TransferRequestDTO(Long id, TransferType type, BigDecimal amount, LocalDateTime timestamp, Long destinationAccountId) {
             this.id = id;
             this.type = type;
             this.amount = amount;
             this.timestamp = timestamp;
-            this.relatedAccountId = relatedAccountId;
+            this.destinationAccountId = destinationAccountId;
         }
 
         public Long getId() {
@@ -105,12 +105,12 @@ public class StatementResponseDTO {
             this.timestamp = timestamp;
         }
 
-        public Long getRelatedAccountId() {
-            return relatedAccountId;
+        public Long getDestinationAccountId() {
+            return destinationAccountId;
         }
 
-        public void setRelatedAccountId(Long relatedAccountId) {
-            this.relatedAccountId = relatedAccountId;
+        public void setDestinationAccountId(Long destinationAccountId) {
+            this.destinationAccountId = destinationAccountId;
         }
 
             
