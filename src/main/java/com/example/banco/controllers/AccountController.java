@@ -11,9 +11,11 @@ import com.example.banco.services.AccountService;
 import com.example.banco.services.TransferService;
 
 import dto.AccountResponseDTO;
+import dto.BalanceResponseDTO;
+import dto.StatementResponseDTO;
 
-@RestController
-@RequestMapping("/accounts")
+@RestController  // ✅ CORRIGIDO
+@RequestMapping("/api/accounts")
 public class AccountController {
     
     @Autowired
@@ -25,6 +27,18 @@ public class AccountController {
     @GetMapping("/{accountId}")
     public ResponseEntity<AccountResponseDTO> searchAccount(@PathVariable Long accountId) {
         AccountResponseDTO dto = accountService.getAccountById(accountId);
+        return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping("/{accountId}/balance")
+    public ResponseEntity<BalanceResponseDTO> getBalance(@PathVariable Long accountId) {
+        BalanceResponseDTO dto = accountService.getAccountBalance(accountId);
+        return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping("/{accountId}/statement")
+    public ResponseEntity<StatementResponseDTO> getStatement(@PathVariable Long accountId) {
+        StatementResponseDTO dto = transferService.getAccountStatement(accountId);
         return ResponseEntity.ok(dto);
     }
 }

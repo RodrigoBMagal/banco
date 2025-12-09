@@ -10,5 +10,7 @@ import com.example.banco.entities.Client;
 @Repository
 public interface ClientRepository extends JpaRepository<Client, Long>{
     Optional<Client> findById(Long id);
+    Optional<Client> findByCpf(String cpf);
     boolean existsById(Long id);
+    boolean existsByCpf(String cpf);
 }

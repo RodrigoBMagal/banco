@@ -1,6 +1,7 @@
 package com.example.banco.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,12 +10,15 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.banco.entities.Account;
 import com.example.banco.entities.Transfer;
 import com.example.banco.entities.TransferType;
-import com.example.banco.exception.AccountNotFoundedException;
+import com.example.banco.exception.AccountNotFoundException;
 import com.example.banco.exception.InsufficientBalanceException;
+import com.example.banco.exception.InvalidTransferException;
 import com.example.banco.repository.AccountRepository;
 import com.example.banco.repository.TransferRepository;
 
 import dto.DepositRequestDTO;
+import dto.WithdrawRequestDTO;
+import dto.TransferRequestDTO;
 import dto.StatementResponseDTO;
 
 @Service
@@ -29,9 +33,9 @@ public class TransferService {
     @Transactional
     public void deposit(DepositRequestDTO dto) {
         Account account = accountRepository.findById(dto.getAccountId())
-                .orElseThrow(() -> new AccountNotFoundedException(dto.getAccountId()));
+                .orElseThrow(() -> new AccountNotFoundException(dto.getAccountId()));
 
-        account.setBalance(account.getBalance().add(dto.getAmount()));
+        account.deposit(dto.getAmount());
         accountRepository.save(account);
 
         Transfer transfer = new Transfer(TransferType.DEPOSIT, dto.getAmount(), account);
@@ -39,11 +43,15 @@ public class TransferService {
     }
 
     @Transactional
-    public void withdraw(DepositRequestDTO dto) {
+    public void withdraw(WithdrawRequestDTO dto) {
         Account account = accountRepository.findById(dto.getAccountId())
-                .orElseThrow(() -> new AccountNotFoundedException(dto.getAccountId()));
+                .orElseThrow(() -> new AccountNotFoundException(dto.getAccountId()));
 
-        account.setBalance(account.getBalance().add(dto.getAmount()));
+        if (!account.hasSufficientBalance(dto.getAmount())) {
+            throw new InsufficientBalanceException();
+        }
+
+        account.withdraw(dto.getAmount());
         accountRepository.save(account);
 
         Transfer transfer = new Transfer(TransferType.WITHDRAW, dto.getAmount(), account);
@@ -51,50 +59,61 @@ public class TransferService {
     }
 
     @Transactional
-    public void transfer(DepositRequestDTO dto, Long toAccountId) {
-        if (dto.getAccountId().equals(toAccountId)) {
-            throw new IllegalArgumentException("Cannot transfer to the same account");
+    public void transfer(TransferRequestDTO dto) {
+        // Validações
+        if (dto.getSourceAccountId().equals(dto.getDestinationAccountId())) {
+            throw new InvalidTransferException("Source and destination accounts cannot be the same");
         }
 
-        Account fromAccount = accountRepository.findById(dto.getAccountId())
-                .orElseThrow(() -> new AccountNotFoundedException(dto.getAccountId()));
-        Account toAccount = accountRepository.findById(toAccountId)
-                .orElseThrow(() -> new AccountNotFoundedException(toAccountId));
+        Account sourceAccount = accountRepository.findById(dto.getSourceAccountId())
+                .orElseThrow(() -> new AccountNotFoundException(dto.getSourceAccountId()));
 
-        if (fromAccount.getBalance().compareTo(dto.getAmount()) < 0) {
+        Account destinationAccount = accountRepository.findById(dto.getDestinationAccountId())
+                .orElseThrow(() -> new AccountNotFoundException(dto.getDestinationAccountId()));
+
+        if (!sourceAccount.hasSufficientBalance(dto.getAmount())) {
             throw new InsufficientBalanceException();
         }
 
-        fromAccount.setBalance(fromAccount.getBalance().subtract(dto.getAmount()));
-        toAccount.setBalance(toAccount.getBalance().add(dto.getAmount()));
+        // Realizar transferência
+        sourceAccount.withdraw(dto.getAmount());
+        destinationAccount.deposit(dto.getAmount());
 
-        accountRepository.save(fromAccount);
-        accountRepository.save(toAccount);
+        accountRepository.save(sourceAccount);
+        accountRepository.save(destinationAccount);
 
-        
+        // Registrar transações
+        Transfer sentTransfer = new Transfer(TransferType.SENT_TRANSFER, dto.getAmount(), sourceAccount);
+        sentTransfer.setAccountDestinationId(destinationAccount.getId());
+        transferRepository.save(sentTransfer);
+
+        Transfer receivedTransfer = new Transfer(TransferType.RECEIVED_TRANSFER, dto.getAmount(), destinationAccount);
+        receivedTransfer.setAccountDestinationId(sourceAccount.getId());
+        transferRepository.save(receivedTransfer);
     }
 
     @Transactional(readOnly = true)
     public StatementResponseDTO getAccountStatement(Long accountId) {
         Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new AccountNotFoundedException(accountId));
+                .orElseThrow(() -> new AccountNotFoundException(accountId));
 
-        List<Transfer> transactions = transferRepository.findByAccountId(accountId);
+        List<Transfer> transfers = transferRepository.findByAccountId(accountId);
 
-        List<StatementResponseDTO.TransferRequestDTO> transfersDTO = transactions.stream()
-            .map(t -> new StatementResponseDTO.TransferRequestDTO(
-                t.getId(),
-                t.getType(),
-                t.getAmount(),
-                t.getTimestamp(),
-                t.getDestinationAccountId()
+        List<StatementResponseDTO.TransferRequestDTO> transferDTOs = transfers.stream()
+                .map(t -> new StatementResponseDTO.TransferRequestDTO(
+                        t.getId(),
+                        t.getType(),
+                        t.getAmount(),
+                        t.getTimestamp(),
+                        t.getAccountDestinationId()
                 ))
-            .toList();
+                .collect(Collectors.toList());
+
         return new StatementResponseDTO(
-            account.getId(),
-            account.getAccountNumber(),
-            account.getBalance(),
-            transfersDTO
+                account.getId(),
+                account.getAccountNumber(),
+                account.getBalance(),
+                transferDTOs
         );
     }
 }

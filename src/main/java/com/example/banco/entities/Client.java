@@ -84,6 +84,10 @@ public class Client {
         this.email = email;
     }
 
+    public Account getAccount() {
+        return account;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

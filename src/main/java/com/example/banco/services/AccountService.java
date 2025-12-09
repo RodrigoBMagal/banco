@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.banco.entities.Account;
-import com.example.banco.exception.AccountNotFoundedException;
+import com.example.banco.exception.AccountNotFoundException;
 import com.example.banco.repository.AccountRepository;
 
 import dto.AccountResponseDTO;
@@ -22,7 +22,7 @@ public class AccountService {
     @Transactional(readOnly = true)
     public AccountResponseDTO getAccountById(Long accountId) {
         Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new AccountNotFoundedException(accountId));
+                .orElseThrow(() -> new AccountNotFoundException(accountId));
         
             return new AccountResponseDTO(
                 account.getId(),
@@ -37,7 +37,7 @@ public class AccountService {
     @Transactional(readOnly = true)
     public BalanceResponseDTO getAccountBalance(Long accountId) {
         Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new AccountNotFoundedException(accountId));
+                .orElseThrow(() -> new AccountNotFoundException(accountId));
             
         return new BalanceResponseDTO(
             account.getId(),
