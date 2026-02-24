@@ -6,14 +6,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.banco.entities.Account;
 import com.example.banco.entities.Client;
-import com.example.banco.exception.ClientAlredyHasAccountException;
 import com.example.banco.exception.ClientNotFoundException;
 import com.example.banco.repository.ClientRepository;
 
 import dto.ClientRequestDTO;
 import dto.ClientResponseDTO;
-
-import java.math.BigDecimal;
 
 @Service
 public class ClientService {
@@ -26,11 +23,16 @@ public class ClientService {
 
     @Transactional
     public ClientResponseDTO createClient(ClientRequestDTO dto) {
+        
         // Verificar se CPF já existe
         if (clientRepository.existsByCpf(dto.getCpf())) {
             throw new IllegalArgumentException("CPF already exists");
         }
 
+        // Adicionar validação de email
+        if (clientRepository.existsByEmail(dto.getEmail())) {
+            throw new IllegalArgumentException("Email already in use");
+        }
         // Criar cliente
         Client client = new Client(dto.getName(), dto.getCpf(), dto.getEmail());
         
