@@ -14,17 +14,28 @@ import com.example.banco.services.ClientService;
 
 import dto.ClientRequestDTO;
 import dto.ClientResponseDTO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 
 
 @RestController
 @RequestMapping("/api/clients")
+@Tag(name= "Clients", description="Client management endpoints")
 public class ClientController {
 
     @Autowired
     private ClientService clientService;
 
+    @Operation(summary = "Create a new client with an associated account")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Client created successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid input data"),
+        @ApiResponse(responseCode = "409", description = "CPF or email already exists")
+    })
     @PostMapping
     public ResponseEntity<ClientResponseDTO> createClient(@Valid @RequestBody ClientRequestDTO dto) {
         ClientResponseDTO response = clientService.createClient(dto);
