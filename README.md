@@ -2,7 +2,7 @@
 
 ## Descrição do Projeto
 
-<p align="justify"> Este projeto consiste num banco de dados </p>
+<p align="justify"> Este projeto consiste em um sistema bancário </p>
 Este projeto tem como objetivo criar, do zero, um sistema que simule as operações básicas de um banco digital. Ele será desenvolvido utilizando tecnologias modernas e boas práticas de engenharia de software, com foco em arquitetura RESTful, testes automatizados e organização ágil.
 <br></br>
 🧾 Descrição Geral<br>
